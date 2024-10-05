@@ -170,3 +170,207 @@
 4. stack: EVM (Ethereum Virtual Machine) 에서 stack data를 관리할 때 쓰는 영역이며, 1024Mb 제한적입니다.
 
 ## instance_1
+
+-   하나의 contract 에서 다른 contract 을 연결할 때 사용.
+
+## instance - constructor(생성자)\_2
+
+-   변수의 값을 초기화 할 때 사용.
+-   인스턴스화 할 때 gas 의 소비 상태를 중요시 해야함.
+
+#### A 를 쓰기 위해서는 constructor를 지정해줘야 한다는 내용.
+
+    // contractA 에 위치
+    constructor(string memory _name, uint256 _age){
+        name = _name;
+        age = _age;
+    }
+
+    // contractB 에 위치
+    A instance = new A("Alice", 52);
+
+## 상속\_1
+
+    contract Father{
+        string public familyName = "Kim";
+        string public givenName = "Jung";
+        uint256 public money = 100;
+
+            constructor(string memory _givenName) {
+                giverName = _givenName;
+            }
+
+            function getFamilyName() view public returns(string memory){
+                return familyName;
+            }
+
+            function getGivenName() view public returns(string memory){
+                return givenName;
+            }
+
+            function getMoney() view public returns(uint256){
+                return money;
+            }
+
+    }
+
+    // // 상속을 원하는 contract 를 is "명칭" 을 써준다. (기본)
+    // contract Son is Father{
+    // }
+
+    // constructor 사용
+    contract Son is Father("James"){
+
+    }
+
+## 상속\_overriding_2
+
+#### virtual
+
+    function getMoney() view public virtual returns(uint256){
+        return money;
+    }
+
+---
+
+#### override
+
+    function getMoney() view override public returns(uint256){
+        return money + earning;
+    }
+
+## 상속\_N개이상\_3
+
+-   override 기능을 사용하여 표현해줘야 함. (부모 contract 에는 겹치는 함수에 대해서 virtual 을 명시해줘야 하며, 자식 함수에는 override를 이용하여 상속받을 contract 에 대하여 작성해줘야 한다.)
+
+>
+
+    contract Son is Father, Mother{
+        function getMoney() public view override(Father, Mother) returns(uint256){
+            return fatherMoney + motherMoney;
+        }
+
+}
+
+## event_1
+
+-   print 구문이 없고 **block 내부에 저장하는 과정을 event** 라고 한다.
+    (단순하게 block event 라는 명칭으로 저장한다고 생각하면 된다.)
+
+        contract lec13{
+
+            event info(string name, uint256 money);
+
+            // 예시로 만드는 함수
+            function sendMoney() public {
+                emit info("KimDaeJin", 1000);
+            }
+        }
+
+## evnet_indexed_2
+
+-   이벤트에 적용되는 인덱스.
+-   evnet 항목에서 원하는 값만 가져오기 위해서는 **indexed** 를 정의해줘야 합니다.
+
+        contract lec14{
+
+        event numberTracker(uint256 num, string str);
+        event numberTracker2(uint256 indexed num, string str);
+
+        uint256 num = 0;
+        function PushEvent(string memory _str) public {
+            emit numberTracker(num, _str);
+            emit numberTracker2(num, _str);
+            num++;
+        }
+
+    }
+
+## 상속\_super_4
+
+-   상속받는 부모의 함수의 내용이 길 때 해당 함수 자체를 가져오는 키워드.
+
+>
+
+    contract Father {
+        event FatherName(string name);
+
+        function who() public virtual{
+        emit FatherName("KimDaeho");
+        }
+
+    }
+
+    contract Son is Father{
+        event sonName(string name);
+
+    function who() public override {
+        super.who(); // 상속받는 부모의 함수의 내용이 길 때 해당 함수 자체를 가져오는 키워드.
+        emit sonName("Kimjin");
+        }
+
+    }
+
+## 상속\_순서\_5
+
+-   상속 받은 항목의 가장 마지막에 작성된 (오른쪽 최신 항목)의 함수를 가져옵니다.
+
+#### Mother의 function who() 함수를 상속받는다.
+
+>
+
+    contract Son is Father, Mother{
+        function who() public override (Father, Mother){
+        super.who();
+        }
+    }
+
+#### Father의 function who() 함수를 상속받는다.
+
+>
+
+    contract Son is Mother, Father{
+        function who() public override (Father, Mother){
+        super.who();
+        }
+    }
+
+## Mapping
+
+-   **key, value** 로 구성.
+-   mapping 에는 length 기능이 없다.
+
+>
+
+    contract lec17{
+
+        // key 값의 형식 => value의 형식 (mapping의 이름도 정의 해줘야 한다. : ageList);
+        mapping (uint256=>uint256) private ageList;
+        mapping (string=>uint256) private priceList; // key: 아이템 , value: 가격
+        mapping (uint256=>string) private nameList; // key: 가격 , value: 아이템
+
+        function setAgeList(uint256 _index, uint256 _age) public {
+            // key 값과 value 값을 넣어주는 함수.
+            ageList[_index] = _age;
+        }
+
+        function getAge(uint256 _index) public view returns(uint256){
+            // 특정 key 값의 value 값을 가져오는 함수.
+            return ageList[_index];
+        }
+
+        function setPriceList(string memory _itemName, uint256 _price) public {
+            priceList[_itemName] = _price;
+        }
+
+        function getPrice(string memory _index) public view returns(uint256){
+            return priceList[_index];
+        }
+
+        function setNameList(uint256 _index, string memory _name) public {
+            nameList[_index] = _name;
+        }
+
+        function getName(uint256 _index) public view returns(string memory){
+            return nameList[_index];
+        }
