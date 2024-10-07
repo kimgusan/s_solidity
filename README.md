@@ -374,3 +374,5 @@
         function getName(uint256 _index) public view returns(string memory){
             return nameList[_index];
         }
+
+## Array(배열)
