@@ -376,4 +376,136 @@
         }
 
 ## Array(배열)
-- python array와는 다른 어떠한 부분을 가지고 있으며, 스마트 컨트렉에 대하여 우선적으로 학습 예정
+
+1. array의 장점은 순환이나 단점으로는 디도스 공격에 취약할 수 있기 떄문에 매핑 기능을 선호함.
+2. 배열의 개수는 50 size 를 제한하여 사용할 것.
+3. length를 사용할 수 있다는 부분이 mapping 과의 차이점이 있습니다.
+
+### 인덱스 내용 삭제(변경)의 2가지 방법 (pop, delete)
+
+-   pop: 제일 최신의 값을 삭제
+-   delete: 특정 인덱스 값을 삭제하나 내용이 삭제되는 값이 아니라 value 값이 0으로 변경되는 것.
+-   change: delete 이후 0 으로 변경된 값에 대하여 다른 값으로 대체하는 방법.
+
+>
+
+    contract lec18{
+
+        // 원하는 size 의 값을 넣어서 저장할 수 있다.
+        uint256[10] public ageFixedizeArray;
+        // 배열의 값을 미리 저장할 수 있다.
+        string[] public nameArray = ["Kal", "Jhon", "Kerri"];
+
+        function AgeLength() public view returns(uint256){
+            return ageArray.length;
+        }
+
+        // 인덱스의 시작은 0부터 시작된다.
+        function AgePush(uint256 _age) public {
+            ageArray.push(_age);
+        }
+
+
+        function AgeGet(uint256 _index)public view returns(uint256){
+            return ageArray[_index];
+        }
+
+        // 인덱스 내용 삭제(변경)의 2가지 방법 (pop, delete)
+        // pop: 제일 최신의 값을 삭제
+        // delete: 특정 인덱스 값을 삭제하나 내용이 삭제되는 값이 아니라 value 값이 0으로 변경되는 것.
+        // change: delete 이후 0 으로 변경된 값에 대하여 다른 값으로 대체하는 방법.
+
+        // 0 -> 0 / 1 -> 70 / length: 1
+        function AgePop() public {
+            ageArray.pop();
+        }
+        // 0 -> 0 / 1 -> 70 / length: 2
+        function AgeDelete(uint256 _index) public {
+            delete ageArray[_index];
+        }
+        // 0 -> 90 / 1 -> 70 / length: 2
+        function AgeChange(uint256 _index, uint256 _age) public {
+            ageArray[_index] = _age;
+        }
+    }
+
+## Array & Mapping Tip.
+
+-   매핑과 배열은 그 당시의 값만 저장하기 때문에 따로 업데이트를 해줘야 한다.
+
+>
+
+    contract lec19 {
+        uint256 num = 89;
+        mapping(uint256=>uint256) numMap;
+        uint256[] numArray;
+
+        function changeNum(uint256 _num) public {
+            num = _num;
+        }
+
+        function showNum() public view returns(uint256){
+            return num;
+        }
+
+        function numMapAdd() public {
+            numMap[0] = num;
+        }
+
+        function showNumMap() public view returns(uint256){
+            return numMap[0];
+        }
+
+        function numArrayAdd()public {
+            numArray.push(num);
+        }
+
+        function showNumArray() public view returns (uint256){
+            return numArray[0];
+        }
+
+        function updateArray() public {
+            numArray[0] = num;
+        }
+    }
+
+## struct (구조체)
+
+-   구조체를 정의한 후 mapping 과 array를 활용하여 사용하는 방법.
+
+>
+
+    contract lec20 {
+        struct Character{
+            uint256 age;
+            string name;
+            string job;
+        }
+        // 구조체에 데이터를 넣는 기본형.
+        function createCharacter(uint256 _age, string memory _name, string memory _job) pure public returns(Character memory){
+            return Character(_age, _name, _job);
+        }
+
+
+        // mapping 과 array를 통해 구조체를 할용할 수 있다.
+        mapping(uint256=>Character) public CharacterMapping;
+        // array앞에 타입을 넣어줘야 하기 떄문에 구조체 명칭을 작성
+        Character[] public CharacterArray;
+
+        function createCharacterMapping(uint256 _key, uint256 _age, string memory _name, string memory _job) public {
+            CharacterMapping[_key] = Character(_age, _name, _job);
+        }
+
+        function getCaracterMapping(uint256 _key) public view returns (Character memory) {
+            return CharacterMapping[_key];
+        }
+
+        function createCharacterArray(uint256 _age, string memory _name, string memory _job) public {
+            CharacterArray.push(Character(_age, _name, _job));
+        }
+
+        function getCharacterArray(uint256 _index) public view returns (Character memory){
+            return CharacterArray[_index];
+        }
+
+    }
